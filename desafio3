@@ -1,0 +1,49 @@
+import org.json.JSONArray;
+import org.json.JSONObject;
+import java.io.FileReader;
+import java.io.IOException;
+
+public class Faturamento {
+    public static void main(String[] args) throws IOException {
+     
+        FileReader reader = new FileReader("faturamento.json");
+        StringBuilder jsonString = new StringBuilder();
+        int character;
+        while ((character = reader.read()) != -1) {
+            jsonString.append((char) character);
+        }
+        reader.close();
+
+       
+        JSONArray faturamentoDiario = new JSONArray(jsonString.toString());
+        double menor = Double.MAX_VALUE;
+        double maior = Double.MIN_VALUE;
+        double soma = 0;
+        int diasAcimaDaMedia = 0;
+        int diasValidos = 0;
+
+        for (int i = 0; i < faturamentoDiario.length(); i++) {
+            JSONObject dia = faturamentoDiario.getJSONObject(i);
+            double valor = dia.getDouble("valor");
+
+            if (valor > 0) {
+                if (valor < menor) menor = valor;
+                if (valor > maior) maior = valor;
+                soma += valor;
+                diasValidos++;
+            }
+        }
+
+        double media = soma / diasValidos;
+
+        for (int i = 0; i < faturamentoDiario.length(); i++) {
+            JSONObject dia = faturamentoDiario.getJSONObject(i);
+            double valor = dia.getDouble("valor");
+            if (valor > media) diasAcimaDaMedia++;
+        }
+
+        System.out.println("Menor valor de faturamento: " + menor);
+        System.out.println("Maior valor de faturamento: " + maior);
+        System.out.println("Dias com faturamento acima da média: " + diasAcimaDaMedia);
+    }
+}
